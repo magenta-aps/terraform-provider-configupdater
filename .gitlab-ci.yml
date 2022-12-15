@@ -1,0 +1,9 @@
+stages:
+  - lint
+
+Dummy:
+  # Stupid, but a job is required for merge trains 🤷‍♀️
+  stage: lint
+  image: alpine
+  script:
+    - "true"
