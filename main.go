@@ -21,6 +21,14 @@ func main() {
 						Optional: true,
 						Default:  "https://config-updater.magentahosted.dk/",
 					},
+					"username": &schema.Schema{
+						Type:     schema.TypeString,
+						Optional: true,
+					},
+					"password": &schema.Schema{
+						Type:     schema.TypeString,
+						Optional: true,
+					},
 				},
 				ResourcesMap: map[string]*schema.Resource{
 					"configupdater_secret": secretsExport(),
@@ -31,7 +39,17 @@ func main() {
 	})
 }
 
+type Configuration struct {
+	url string
+	/* basic auth */
+	username string
+	password string
+}
+
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
-	url := d.Get("url").(string)
-	return url, nil
+	return &Configuration{
+		url:      d.Get("url").(string),
+		username: d.Get("username").(string),
+		password: d.Get("password").(string),
+	}, nil
 }

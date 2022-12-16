@@ -39,8 +39,10 @@ func secretCreate(d *schema.ResourceData, meta interface{}) error {
 		return err
 	}
 
+	config := meta.(*Configuration)
+
 	client := &http.Client{}
-	url := meta.(string) + "secrets_export/export/" + file_path
+	url := config.url + "secrets_export/export/" + file_path
 	log.Printf("secrets_exporter.go: creating new secret %s\n", url)
 
 	req, err := http.NewRequest(
@@ -53,11 +55,14 @@ func secretCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
+	if config.username != "" && config.password != "" {
+		req.SetBasicAuth(config.username, config.password)
+	}
+
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
-
 	if resp.StatusCode > 299 {
 		return fmt.Errorf("secrets_exporter.go: HTTP status code = %d", resp.StatusCode)
 	}
@@ -79,12 +84,31 @@ func secretCreate(d *schema.ResourceData, meta interface{}) error {
 func secretRead(d *schema.ResourceData, meta interface{}) error {
 	file_path := d.Get("file_path").(string)
 
-	url := meta.(string) + "secrets_export/export/" + file_path
+	config := meta.(*Configuration)
+
+	client := &http.Client{}
+	url := config.url + "secrets_export/export/" + file_path
 	log.Printf("secrets_exporter.go: reading %s\n", url)
 
-	resp, err := http.Get(url)
+	req, err := http.NewRequest(
+		http.MethodGet,
+		url,
+		nil,
+	)
 	if err != nil {
 		return err
+	}
+
+	if config.username != "" && config.password != "" {
+		req.SetBasicAuth(config.username, config.password)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	if resp.StatusCode > 299 {
+		return fmt.Errorf("secrets_exporter.go: HTTP status code = %d", resp.StatusCode)
 	}
 
 	defer resp.Body.Close()
