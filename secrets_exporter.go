@@ -5,8 +5,10 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"io/ioutil"
+	"log"
 	"net/http"
 )
 
@@ -34,38 +36,42 @@ func secretCreate(d *schema.ResourceData, meta interface{}) error {
 	file_path := d.Get("file_path").(string)
 	secrets, err := json.Marshal(d.Get("secret"))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	client := &http.Client{}
+	url := meta.(string) + "secrets_export/export/" + file_path
+	log.Printf("secrets_exporter.go: creating new secret %s\n", url)
 
 	req, err := http.NewRequest(
 		http.MethodPut,
-		meta.(string)+"secrets_export/export/"+file_path,
+		url,
 		bytes.NewBuffer(secrets),
 	)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if resp.StatusCode > 299 {
-		panic("Status code over > 299")
+		return fmt.Errorf("secrets_exporter.go: HTTP status code = %d", resp.StatusCode)
 	}
 
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	d.SetId(string(data))
+	id := string(data)
+	log.Printf("secrets_exporter.go: success, setting ID to '%s'\n", id)
+	d.SetId(id)
 
 	return secretRead(d, meta)
 }
@@ -73,19 +79,24 @@ func secretCreate(d *schema.ResourceData, meta interface{}) error {
 func secretRead(d *schema.ResourceData, meta interface{}) error {
 	file_path := d.Get("file_path").(string)
 
-	resp, err := http.Get(meta.(string) + "secrets_export/export/" + file_path)
+	url := meta.(string) + "secrets_export/export/" + file_path
+	log.Printf("secrets_exporter.go: reading %s\n", url)
+
+	resp, err := http.Get(url)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	defer resp.Body.Close()
 
 	data, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	d.SetId(string(data))
+	id := string(data)
+	log.Printf("secrets_exporter.go: success, setting ID to '%s'\n", id)
+	d.SetId(id)
 
 	return nil
 }
