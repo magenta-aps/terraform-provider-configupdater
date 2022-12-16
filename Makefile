@@ -7,7 +7,7 @@ PLUGIN_PATH=terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS
 
 
 terraform-provider-configupdater: *.go
-	go build -o terraform-provider-configupdater
+	go build -o $@
 
 
 format:
