@@ -3,3 +3,4 @@ terraform-provider-configupdater
 .terraform
 terraform.d
 .terraform.lock.hcl
+terraform.tfstate
