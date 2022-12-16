@@ -1,9 +1,20 @@
 stages:
   - lint
 
-Dummy:
-  # Stupid, but a job is required for merge trains 🤷‍♀️
+Format terraform code:
   stage: lint
   image: alpine
+  needs: []
+  before_script:
+    - apk add terraform
   script:
-    - "true"
+    - terraform fmt -check
+
+Format go code:
+  stage: lint
+  image: alpine
+  needs: []
+  before_script:
+    - apk add go
+  script:
+    - test -z "$(go fmt)"

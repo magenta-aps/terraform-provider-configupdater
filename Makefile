@@ -12,6 +12,11 @@ terraform-provider-configupdater: *.go
 	cp terraform-provider-configupdater ${PLUGIN_PATH}
 
 
+format:
+	terraform fmt
+	go fmt
+
+
 init: terraform-provider-configupdater main.tf
 	-rm .terraform.lock.hcl
 	terraform init

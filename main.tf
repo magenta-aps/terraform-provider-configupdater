@@ -4,7 +4,7 @@
 terraform {
   required_providers {
     configupdater = {
-      source  = "magenta-aps/configupdater"
+      source = "magenta-aps/configupdater"
     }
   }
 }
