@@ -4,7 +4,6 @@
 terraform {
   required_providers {
     configupdater = {
-      version = "~> 1.0.0"
       source  = "magenta-aps/configupdater"
     }
   }
