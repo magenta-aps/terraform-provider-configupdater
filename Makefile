@@ -8,8 +8,6 @@ PLUGIN_PATH=terraform.d/plugins/${HOSTNAME}/${NAMESPACE}/${NAME}/${VERSION}/${OS
 
 terraform-provider-configupdater: *.go
 	go build -o terraform-provider-configupdater
-	mkdir -p ${PLUGIN_PATH}
-	cp terraform-provider-configupdater ${PLUGIN_PATH}
 
 
 format:
@@ -17,6 +15,9 @@ format:
 	go fmt
 
 
+.DEFAULT_GOAL := init
 init: terraform-provider-configupdater main.tf
+	mkdir -p ${PLUGIN_PATH}
+	cp $< ${PLUGIN_PATH}
 	-rm .terraform.lock.hcl
 	terraform init
