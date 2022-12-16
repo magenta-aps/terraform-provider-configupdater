@@ -1,5 +1,6 @@
 stages:
   - lint
+  - build
 
 Format terraform code:
   stage: lint
@@ -18,3 +19,12 @@ Format go code:
     - apk add go
   script:
     - test -z "$(go fmt)"
+
+Build:
+  stage: build
+  image: alpine
+  needs: []
+  before_script:
+    - apk add go make
+  script:
+    - make terraform-provider-configupdater
