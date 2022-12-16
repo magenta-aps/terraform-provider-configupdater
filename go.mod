@@ -2,7 +2,10 @@ module magenta.dk/m/v2
 
 go 1.18
 
-require github.com/hashicorp/terraform-plugin-sdk/v2 v2.24.1
+require (
+	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
+	github.com/hashicorp/terraform-plugin-sdk/v2 v2.24.1
+)
 
 require (
 	github.com/agext/levenshtein v1.2.2 // indirect

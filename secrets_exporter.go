@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+        "github.com/asaskevich/govalidator"
 )
 
 func secretsExport() *schema.Resource {
@@ -40,6 +41,12 @@ func secretCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	config := meta.(*Configuration)
+        _, config_error := govalidator.ValidateStruct(config)
+        if config_error != nil {
+            log.Printf("error: " + config_error.Error())
+            return config_error
+        }
+
 
 	client := &http.Client{}
 	url := config.url + "secrets_export/export/" + file_path
@@ -55,9 +62,8 @@ func secretCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
-	if config.username != "" && config.password != "" {
-		req.SetBasicAuth(config.username, config.password)
-	}
+
+        req.SetBasicAuth(config.username, config.password)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -85,6 +91,11 @@ func secretRead(d *schema.ResourceData, meta interface{}) error {
 	file_path := d.Get("file_path").(string)
 
 	config := meta.(*Configuration)
+        _, config_error := govalidator.ValidateStruct(config)
+        if config_error != nil {
+            println("error: " + config_error.Error())
+            return config_error
+        }
 
 	client := &http.Client{}
 	url := config.url + "secrets_export/export/" + file_path

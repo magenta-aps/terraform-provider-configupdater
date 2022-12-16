@@ -9,7 +9,13 @@ package main
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/plugin"
+        "github.com/asaskevich/govalidator"
 )
+
+// Enable validation
+func init() {
+    govalidator.SetFieldsRequiredByDefault(true)
+}
 
 func main() {
 	plugin.Serve(&plugin.ServeOpts{
@@ -42,8 +48,8 @@ func main() {
 type Configuration struct {
 	url string
 	/* basic auth */
-	username string
-	password string
+        username string `valid:"required"`
+        password string `valid:"required,min=8"`
 }
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
