@@ -1,4 +1,4 @@
-// config-updater-provider is a Terraform provider for config-updater.
+// terraform-provider-configupdater is a Terraform provider for config-updater.
 //
 // Currently, only implements secrets_export.
 //
